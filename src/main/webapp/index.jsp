@@ -18,11 +18,13 @@
 
 	<%
 	//TOKEN QUE NOS DA FACEBOOK
-	String token = "EAADsQKlicEMBOZB8M2MWOFcNqhmrxGTO6QK56vdjOG5FLv0ErEtA4h8eIZBQ3WgZCZAdNqRhvZCjnkCZBdHGZAJrsnd6PzUK3DztvPK08eWSZCL1B1Vb8sZA3TZAzTnYKHPjkWfeTfVy2yUaojaxiQIGQRULzlKrFi6poLTP8j3VZBZBFrUJvCxqZAiT3DWXkClCvpuWTdUivNKTRIjBeq8O1UcowBuOzuX0vP5sAa8s6";
+	String token = "EAADsQKlicEMBOyROE0Xcq5fOEVZCDNEE0YHc1Synjtgclu0KREQg5ho1g6ZBxvcLKdxAOZBQGj500tHF5cWSW56ZALOVHZBZAiZAGtCJg9LHxGkRhs2tRslQEubdvlZByDkui3HTkF7lXwiigtZBSlYAjHS5KbgZBD3fzV5yjwlJ1cIKmFaOiXI02a84xNEOc3LSPf8ttKYmQ9HioYKDo7VHc8TVUXAMYEYHrT5QEZD";
 	//NUESTRO TELEFONO
 	String telefono = "529516470269";
 	//IDENTIFICADOR DE NUMERO DE TELEFONO
 	String idNumero = "356387480887111";
+	
+	String nombre="Eli";
 
 	//realizamos nuestras propies respuestas:
 	String respuestaTexto = "Hola queridos amigos de Efectivale, nos complace comunicarles\n por este medio";
@@ -51,8 +53,23 @@
 
 	/*Plantilla 1 de meta-FACEBOOK; Error: 404_NOT_FOUND*/
 
-	writer.write("{" + "\"messaging_product\": \"whatsapp\"," + "\"to\": \"" + telefono + "\"," + "\"type\": \"template\","
-			+ "\"template\": " + "{ \"name\": \"plantilla_not_found\"," + "\"language\": { \"code\": \"es\" }" + "}"
+	writer.write("{" + "\"messaging_product\": \"whatsapp\"," 
+	            + "\"to\": \"" + telefono + "\"," + 
+	            "\"type\": \"template\","
+			    + "\"template\": " + "{ \"name\": \"saludo_notificacion_m\"," 
+	            + "\"language\": { \"code\": \"es\" },"
+	            +"\"components\":  ["
+	            +"{"
+	            +"\"type\": \"body\","
+	            +"\"parameters\": ["
+	            +"{"
+	            +"\"type\": \"text\","
+	            +"\"text\": \""+nombre+"\" "
+	            +"}"
+	            +"]"
+	            +"}"
+	            +"]"
+	         + "}"
 			+ "}");
 	
 	

@@ -78,11 +78,11 @@ public class AplicacionMonitoreoNotificacionesWebYApps {
 
 
 	//public static void main(String[]args) throws MalformedURLException,IOException, MessagingException {
-	public static void main(String[] args) throws IOException{
+	public static void main(String[] args) throws IOException,MalformedURLException{
 		
 		
 		//TOKEN QUE NOS DA FACEBOOK
-				String token = "EAADsQKlicEMBO6798jE19MROPL2qyO04kTN0zYwvvVYZCySoNADZBREcNB1bTJ9T0A96DBCvGT7d9KTkAKZB4wS0yj9NeDIlUiOSnrGbi0UBmmVnpjdgsoQENg4eSFzXSn5AuvdMxIirtZBpnVTNrAPkIET83B3Pw3ZAkKXb9OkMxpfZCryMcZB72ItoRvOQdve1fUv65ZC0lZC971IShakjRbjZBMSToc6UrXZAeoZD";
+				String token = "EAADsQKlicEMBOyROE0Xcq5fOEVZCDNEE0YHc1Synjtgclu0KREQg5ho1g6ZBxvcLKdxAOZBQGj500tHF5cWSW56ZALOVHZBZAiZAGtCJg9LHxGkRhs2tRslQEubdvlZByDkui3HTkF7lXwiigtZBSlYAjHS5KbgZBD3fzV5yjwlJ1cIKmFaOiXI02a84xNEOc3LSPf8ttKYmQ9HioYKDo7VHc8TVUXAMYEYHrT5QEZD";
 				//NUESTRO TELEFONO
 				//String telefono = "529516470269";
 				String telefono = "529516470269";
@@ -97,7 +97,9 @@ public class AplicacionMonitoreoNotificacionesWebYApps {
 				
 				
 		/*Parte del código para monitoreo*/
-		
+				
+	    //colocaremos la dirección donde se alojara el archito texto(txt) que contiene las url a leer
+		//se debe definir en concreto la ubicación del archivo(sea manera local o en algun servidor)
 		File fileUrls = new File("C:/Users/eli.santiago/OneDrive - FleetCor/Documentos/Documentación-proyectosEfectivale/UrlSistemas.txt");
 
 		// 1.-creando un objeto FileReader que contendra la direccion del archivo,
@@ -112,32 +114,37 @@ public class AplicacionMonitoreoNotificacionesWebYApps {
 			 * siguiente forma:
 			 */
 			BufferedReader in = new BufferedReader(fr);
-			String inputLine;
+			String inputLine = "";
 			StringBuffer response = new StringBuffer();
 			StringBuffer responsability = new StringBuffer();
-
+			
+			//Verificar y agregar protocolo si es necesario
+			
+			if(!inputLine.matches("^[a-zA-Z][a-zA-Z0-9+.-]*:.*")) {
+			   inputLine="https://"+inputLine;
 			while ((inputLine = in.readLine()) != null) {
 
 				responsability = response.append(inputLine);
 				String resultRespons = responsability.toString();
-				String data = "";
+				//String data = "";
 
 				// Metodos para leer el contenido del archivo txt, contiene información de URLS
-				URL url = new URL(inputLine);
+			        try {
+			        	URL url = new URL(inputLine);
+				        System.out.println("resultado de url: " + url);
+				        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+				    	conn.setRequestProperty("Content-Type", "text/plain;utf-8");
+						conn.setDoOutput(true);
+					
 
-				System.out.println("resultado de url: " + url);
+				       try (OutputStream os = conn.getOutputStream()) {
+						//byte[] input = data.getBytes("utf-8");
+						//os.write(input, 0, input.length);
 
-				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-				conn.setRequestProperty("Content-Type", "text/plain;utf-8");
-				conn.setDoOutput(true);
-
-				try (OutputStream os = conn.getOutputStream()) {
-					byte[] input = data.getBytes("utf-8");
-					os.write(input, 0, input.length);
-
-					int code = conn.getResponseCode();
-
-					/* Manejo de respuestas para monitoreo de Sistemas */
+						int code = conn.getResponseCode();
+			        
+					
+	                /* Manejo de respuestas para monitoreo de Sistemas */
 
 					String ResponseMessageOK = "OK";
 					String ResponseMessageNotFound = "NOT_FOUND";
@@ -251,7 +258,9 @@ public class AplicacionMonitoreoNotificacionesWebYApps {
 		    System.out.println("Manejo de respuesta error cuatrocerocuatro con nueva plantilla version 1.TEEN<3 : "+respuestaNOT_FOUND);
 
 		    
-		              
+		              /*plantilla creada desde el panel de creación de plantillas en la api de meta-developers;
+		               *la cual contiene 4 variables o parametros, las cuales mostrarán la información acerca de los sistemas que esten
+		               *en vulnerabilidad*/
 						writer.write("{"
 		                 +"\"messaging_product\": \"whatsapp\","
 		                 +"\"recipient_type\": \"individual\","
@@ -289,7 +298,7 @@ public class AplicacionMonitoreoNotificacionesWebYApps {
 					   //pruebas de envio de correo con gmail and java
 				       boolean salidaCorreo;
 				       salidaCorreo =salidaCorreos(respuestaTexto,path,host,ResponseCode,fecha);
-				       System.out.println("impresion salida de correo con gmail and java 1.8:"+salidaCorreo);
+				       System.out.println("impresion salida de correo con gmail and java 1.10:"+salidaCorreo);
 						
 						
 				   }
@@ -329,11 +338,19 @@ public class AplicacionMonitoreoNotificacionesWebYApps {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					System.out.println("leyendo flujo 1: "+ e.getMessage());
-				}
+			}
+				       
+				       
+			 
+			}catch(MalformedURLException esc) {
+			 esc.printStackTrace();
+			 System.out.println("exception de MalFormedURLException: "+esc.getMessage());
+	  }
 
 
 			}
 			in.close();
+			}
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -512,8 +529,8 @@ public class AplicacionMonitoreoNotificacionesWebYApps {
                     + "  <font style=\"font-size: 18px; font-family: Arial, sans-serif; color: #737373; font-weight:bold; line-height: 24px\">"
                     + "             </font></b>" + "  </td>" + "             </tr>"
                     
-                    + "    <b>  CODIGO RESPUESTA :</b>  " +  responseCode +  "  <br>" + " <br>"
-                    + "    <b>  FECHA INCIDENCIA :</b>  " +  fecha +                   "             <br>" + " <br>"
+                    + "    <b>  CÓDIGO RESPUESTA :</b>  " +  responseCode +  "  <br>" + " <br>"
+                    + "    <b>  FECHA: </b>  " +  fecha +                   "             <br>" + " <br>"
                     + "     </table>" + "         </td>" + "       </tr>" + "     </table>" + "    </td>" + " </tr>"
 
 	              
@@ -532,8 +549,8 @@ public class AplicacionMonitoreoNotificacionesWebYApps {
 	        MimeMessage message=new MimeMessage(session);
 	        message.setFrom(new InternetAddress(emailFrom));
 	        //message.addRecipient(Message.RecipientType.TO, new InternetAddress("svalenzuela@saro.mx"));
-	        message.addRecipient(Message.RecipientType.TO, new InternetAddress("luisangel.sanchez@fleetcor.com"));
-	        //message.addRecipient(Message.RecipientType.TO, new InternetAddress("eli.santiago@fleetcor.com"));
+	        //message.addRecipient(Message.RecipientType.TO, new InternetAddress("luisangel.sanchez@fleetcor.com"));
+	        message.addRecipient(Message.RecipientType.TO, new InternetAddress("eli.santiago@fleetcor.com"));
 	        message.setSubject("REPORTE INCIDENCIAS EFECTIVALE");
 	        message.setContent(cuerpoMensaje);
 	        
