@@ -29,16 +29,15 @@ public class AplicativoMonitoreoNotificaciones {
 			 * 1.-Creamos un objeto tipo File, el cual leera la ruta de los sistemas web en
 			 * efectivale, que se tienen que monitorear en caso de notificar algún problema
 			 */
-			File fileUrlsEfv = new File("C:/Users/eli.santiago/OneDrive - FleetCor/Documentos/Documentación-proyectosEfectivale/UrlSistemas.txt");
-			
-		
+			File fileUrlsEfv = new File(
+					"C:/Users/eli.santiago/OneDrive - FleetCor/Documentos/Documentación-proyectosEfectivale/UrlSistemas.txt");
+
 			/*
 			 * 2.-Creando un objeto FileReader que contendra la dirección podremos leer un
 			 * fichero de texto
 			 */
 			try (FileReader fr = new FileReader(fileUrlsEfv)) {
-				
-				
+
 				/* Aquí incluimos también las variables de Facebook */
 
 				// Token que nos proporciona Facebook
@@ -60,7 +59,7 @@ public class AplicativoMonitoreoNotificaciones {
 					responsability = response.append(inputLine);
 					String resulResponse = responsability.toString();
 
-					//System.out.println("resultResponse: " + resulResponse);
+					// System.out.println("resultResponse: " + resulResponse);
 
 					String data = "";
 
@@ -69,20 +68,17 @@ public class AplicativoMonitoreoNotificaciones {
 					 * URL(Universal Resource Locator): un objeto servicio Internet
 					 */
 					URL url = new URL(inputLine);
-					
+
 					System.out.println("resultado de urlAplicativoMonitoreo: " + url);
 
-
-				// INICIALIZAMOS EL CONTENEDOR DEL ENVIO para la url de los sistemas
+					// INICIALIZAMOS EL CONTENEDOR DEL ENVIO para la url de los sistemas
 					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 					conn.setRequestProperty("Content-Type", "text/plain;utf-8");
 					conn.setDoOutput(true);
-					
-					
-					
+
 					/* Colocamos la URL de la API GRAPH facebook */
 					URL urlFacebook = new URL("https://graph.facebook.com/v19.0/" + idNumero + "/messages");
-					
+
 					// INICIALIZAMOS EL CONTENEDOR DE ENVIO PARA FACEBOOK
 					HttpURLConnection httpConn = (HttpURLConnection) urlFacebook.openConnection();
 
@@ -93,35 +89,29 @@ public class AplicativoMonitoreoNotificaciones {
 					httpConn.setRequestProperty("Authorization", "Bearer" + token);
 
 					// DEFINIMOS QUE LOS DATOS SERAN TRATADOS COMO JSON
-					httpConn.setRequestProperty("Content-Type","application/json; application/x-www-form-urlencoded; charset=UTF-8");
+					httpConn.setRequestProperty("Content-Type",
+							"application/json; application/x-www-form-urlencoded; charset=UTF-8");
 
 					// PREPARAMOS Y ENVIAMOS LOS DATOS COMO JSON
 					httpConn.setDoOutput(true);
-					
-
-				
 
 					/*
 					 * OutputStreamWriter: un OutputStreamer convierte caracteres a bytes usando una
 					 * decodificacion de caracteres por defecto o una decodificacion de caracteres
 					 * especificada por su nombre y luego escribe estos bytes en un OutputStream
 					 */
-					
+
 					OutputStreamWriter writer_OK = new OutputStreamWriter(httpConn.getOutputStream());
 					OutputStreamWriter writer_Not_Found = new OutputStreamWriter(httpConn.getOutputStream());
 					OutputStreamWriter writer_Server_Error = new OutputStreamWriter(httpConn.getOutputStream());
 					OutputStreamWriter writer_Service_Unavailable = new OutputStreamWriter(httpConn.getOutputStream());
 					OutputStreamWriter writer_Gateway_TimeOut = new OutputStreamWriter(httpConn.getOutputStream());
-					
-					
 
 					try (OutputStream os = conn.getOutputStream()) {
 
 						byte[] input = data.getBytes("utf-8");
 						os.write(input, 0, input.length);
-						
-						
-						
+
 						/*
 						 * code: Es una variable de tipo entera que almacenará la información respecto
 						 * al estatus del servidor
@@ -162,11 +152,6 @@ public class AplicativoMonitoreoNotificaciones {
 						String respuestaNOT_FOUND = "";
 						String respuestaSERVER_ERROR = "";
 						String respuestaGATEWAYTIME_OUT = "";
-						
-						
-						
-						
-						
 
 						/*
 						 * Variables que atraparan información sobre los datos que arrojara el servidor
@@ -178,10 +163,10 @@ public class AplicativoMonitoreoNotificaciones {
 								+ "authorithy: " + authority + "\n" + "puerto: " + port + "\n" + "path: " + path + "\n"
 								+ "contentType: " + ContentType + "\n" + "fecha: " + fecha;
 
-						respuestaNOT_FOUND += "responseMessageEFVMonitoreo:" + ResponseMessageNotFound + "\n" + "ResponseCode: "
-								+ ResponseCode + "\n" + "protocolo: " + protocolo + "\n" + "host: " + host + "\n"
-								+ "authorithy: " + authority + "\n" + "puerto: " + port + "\n" + "path: " + path + "\n"
-								+ "contentType: " + ContentType + "\n" + "fecha: " + fecha;
+						respuestaNOT_FOUND += "responseMessageEFVMonitoreo:" + ResponseMessageNotFound + "\n"
+								+ "ResponseCode: " + ResponseCode + "\n" + "protocolo: " + protocolo + "\n" + "host: "
+								+ host + "\n" + "authorithy: " + authority + "\n" + "puerto: " + port + "\n" + "path: "
+								+ path + "\n" + "contentType: " + ContentType + "\n" + "fecha: " + fecha;
 
 						respuestaSERVER_ERROR = "responseMessageEFVMonitoreo:" + ResponseMessageServerError + "\n"
 								+ "ResponseCode: " + ResponseCode + "\n" + "protocolo: " + protocolo + "\n" + "host: "
@@ -192,45 +177,43 @@ public class AplicativoMonitoreoNotificaciones {
 								+ "ResponseCode: " + ResponseCode + "\n" + "protocolo: " + protocolo + "\n" + "host: "
 								+ host + "\n" + "authorithy: " + authority + "\n" + "puerto: " + port + "\n" + "path: "
 								+ path + "\n" + "contentType: " + ContentType + "\n" + "fecha: " + fecha;
-						
-						
-						
 
 						if (code == conn.HTTP_OK) {
 							System.out.println("respuesta fuera de estatus 200 OK1:" + "\n" + respuestaOk);
-							
-							 writer_OK.write("{" + "\"messaging_product\": \"whatsapp\"," + "\"to\": \"" + telefono + "\"," + "\"type\": \"template\","
-										+ "\"template\": " + "{ \"name\": \"server_status_200ok\"," + "\"language\": { \"code\": \"es\" }" + "}"
-										+ "}");
-							 
-							 
+
+							writer_OK.write("{" + "\"messaging_product\": \"whatsapp\"," + "\"to\": \"" + telefono
+									+ "\"," + "\"type\": \"template\"," + "\"template\": "
+									+ "{ \"name\": \"server_status_200ok\"," + "\"language\": { \"code\": \"es\" }"
+									+ "}" + "}");
+
 							// LIMPIAMOS LOS DATOS
-							 writer_OK.flush();
-								// cerramos LOS DATOS
-							 writer_OK.close();
-								// cerramos la conexión
-								httpConn.getOutputStream().close();
-								// RECIBIMOS EL RESULTADO DEL ENVIO
-								InputStream responseStream = httpConn.getResponseCode() / 100 == 2
-										? httpConn.getInputStream()
-										: httpConn.getErrorStream();
-								Scanner s = new Scanner(responseStream).useDelimiter("\\A");
+							writer_OK.flush();
+							// cerramos LOS DATOS
+							writer_OK.close();
+							// cerramos la conexión
+							httpConn.getOutputStream().close();
+							// RECIBIMOS EL RESULTADO DEL ENVIO
+							InputStream responseStream = httpConn.getResponseCode() / 100 == 2
+									? httpConn.getInputStream()
+									: httpConn.getErrorStream();
+							Scanner s = new Scanner(responseStream).useDelimiter("\\A");
 
-								// OBTENEMOS LOS RESULTADOS
-								String respuestaOKs = s.hasNext() ? s.next() : "";
+							// OBTENEMOS LOS RESULTADOS
+							String respuestaOKs = s.hasNext() ? s.next() : "";
 
-								System.out.println("Response aplicativoMonitoreoNotificacionesOK2.6? : " + respuestaOKs);
-	                           
-								//s.close();
+							System.out.println("Response aplicativoMonitoreoNotificacionesOK2.6? : " + respuestaOKs);
+
+							// s.close();
 						}
 
 						if (code == conn.HTTP_NOT_FOUND) {
-							
-							System.out.println("respuesta estatus 404 NOT FOUND :" + "\n" +  respuestaNOT_FOUND);
 
-							writer_Not_Found.write("{" + "\"messaging_product\": \"whatsapp\"," + "\"to\": \"" + telefono + "\"," + "\"type\": \"template\","
-									+ "\"template\": " + "{ \"name\": \"plantilla_not_found\"," + "\"language\": { \"code\": \"es\" }" + "}"
-									+ "}");
+							System.out.println("respuesta estatus 404 NOT FOUND :" + "\n" + respuestaNOT_FOUND);
+
+							writer_Not_Found.write("{" + "\"messaging_product\": \"whatsapp\"," + "\"to\": \""
+									+ telefono + "\"," + "\"type\": \"template\"," + "\"template\": "
+									+ "{ \"name\": \"plantilla_not_found\"," + "\"language\": { \"code\": \"es\" }"
+									+ "}" + "}");
 
 							// LIMPIAMOS LOS DATOS
 							writer_Not_Found.flush();
@@ -247,13 +230,11 @@ public class AplicativoMonitoreoNotificaciones {
 							// OBTENEMOS LOS RESULTADOS
 							String respuestaNTFD = s.hasNext() ? s.next() : "";
 
-							System.out.println("Response aplicativoMonitoreoNotificacionesNot_Found2.2? : " + respuestaNTFD);
-                           
-							//s.close();
+							System.out.println(
+									"Response aplicativoMonitoreoNotificacionesNot_Found2.2? : " + respuestaNTFD);
+
+							// s.close();
 						}
-						
-						
-						
 
 					}
 
@@ -261,9 +242,9 @@ public class AplicativoMonitoreoNotificaciones {
 				in.close();
 
 			} catch (IOException io) {
-				
+
 				System.out.println("Exception IO2.1: " + io.getMessage());
-			
+
 			}
 
 		} catch (Exception e) {
