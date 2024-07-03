@@ -35,7 +35,7 @@ public class ConexionPoolIncidencias {
 		  pool.setTestWhileIdle(true);
 		  
 		  numConexiones++;
-		  System.out.println("pool de conexión para base de datos dbpld: "+ numConexiones);
+		  System.out.println("pool de conexión para base de datos incidencias: "+ numConexiones);
 		 }
 		 
 		 return pool;
